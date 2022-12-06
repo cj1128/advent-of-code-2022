@@ -45,10 +45,10 @@ func parse(str string) []Elf {
 func main() {
 	parsed := parse(utils.ReadStdin())
 
-	// part1
+	// 67633
 	// part1(parsed)
 
-	// part2
+	// 199628
 	part2(parsed)
 }
 
