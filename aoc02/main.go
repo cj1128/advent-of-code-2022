@@ -23,11 +23,11 @@ func part1(rounds []Round) {
 	// 1 for Rock, 2 for Paper, and 3 for Scissors
 	shapeSelectedScore := func(rps RPS) int {
 		switch rps {
-		case "rock":
+		case Rock:
 			return 1
-		case "paper":
+		case Paper:
 			return 2
-		case "scissors":
+		case Scissors:
 			return 3
 		}
 
@@ -37,38 +37,38 @@ func part1(rounds []Round) {
 	// 0 if you lost, 3 if the round was a draw, and 6 if you won
 	outcomeScore := func(opponent, me RPS) int {
 		switch opponent {
-		case "rock":
+		case Rock:
 			{
 				switch me {
-				case "rock":
+				case Rock:
 					return 3
-				case "paper":
+				case Paper:
 					return 6
-				case "scissors":
+				case Scissors:
 					return 0
 				}
 			}
 
-		case "paper":
+		case Paper:
 			{
 				switch me {
-				case "rock":
+				case Rock:
 					return 0
-				case "paper":
+				case Paper:
 					return 3
-				case "scissors":
+				case Scissors:
 					return 6
 				}
 			}
 
-		case "scissors":
+		case Scissors:
 			{
 				switch me {
-				case "rock":
+				case Rock:
 					return 6
-				case "paper":
+				case Paper:
 					return 0
-				case "scissors":
+				case Scissors:
 					return 3
 				}
 			}
@@ -88,39 +88,39 @@ func part1(rounds []Round) {
 func part2(rounds []Round) {
 	newRounds := make([]Round, len(rounds))
 
-	getRPS := func(component RPS, result string) RPS {
+	getRPS := func(component RPS, result Result) RPS {
 		switch component {
-		case "rock":
+		case Rock:
 			{
 				switch result {
-				case "lose":
-					return "scissors"
-				case "draw":
-					return "rock"
-				case "win":
-					return "paper"
+				case Lose:
+					return Scissors
+				case Draw:
+					return Rock
+				case Win:
+					return Paper
 				}
 			}
-		case "paper":
+		case Paper:
 			{
 				switch result {
-				case "lose":
-					return "rock"
-				case "draw":
-					return "paper"
-				case "win":
-					return "scissors"
+				case Lose:
+					return Rock
+				case Draw:
+					return Paper
+				case Win:
+					return Scissors
 				}
 			}
-		case "scissors":
+		case Scissors:
 			{
 				switch result {
-				case "lose":
-					return "paper"
-				case "draw":
-					return "scissors"
-				case "win":
-					return "rock"
+				case Lose:
+					return Paper
+				case Draw:
+					return Scissors
+				case Win:
+					return Rock
 				}
 			}
 		}
@@ -135,22 +135,22 @@ func part2(rounds []Round) {
 
 		switch round.me {
 		// need to lose
-		case "rock":
+		case Rock:
 			{
-				newRound.me = getRPS(round.opponent, "lose")
+				newRound.me = getRPS(round.opponent, Lose)
 			}
 
 		// need to end in a draw
-		case "paper":
+		case Paper:
 			{
-				newRound.me = getRPS(round.opponent, "draw")
+				newRound.me = getRPS(round.opponent, Draw)
 
 			}
 
 		// need to win
-		case "scissors":
+		case Scissors:
 			{
-				newRound.me = getRPS(round.opponent, "win")
+				newRound.me = getRPS(round.opponent, Win)
 			}
 		}
 	}
@@ -158,12 +158,20 @@ func part2(rounds []Round) {
 	part1(newRounds)
 }
 
-type RPS string
+type RPS int
 
 const (
-	Rock     RPS = "rock"
-	Paper    RPS = "paper"
-	Scissors RPS = "scissors"
+	Rock     RPS = iota
+	Paper        = iota
+	Scissors     = iota
+)
+
+type Result int
+
+const (
+	Win  Result = iota
+	Draw        = iota
+	Lose        = iota
 )
 
 type Round struct {
@@ -189,17 +197,17 @@ func parse(str string) []Round {
 func toRPS(str string) RPS {
 	switch str {
 	case "A":
-		return "rock"
+		return Rock
 	case "B":
-		return "paper"
+		return Paper
 	case "C":
-		return "scissors"
+		return Scissors
 	case "X":
-		return "rock"
+		return Rock
 	case "Y":
-		return "paper"
+		return Paper
 	case "Z":
-		return "scissors"
+		return Scissors
 	default:
 		panic(fmt.Errorf("invalid RPS string %s", str))
 	}
