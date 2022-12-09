@@ -35,17 +35,17 @@ func parse(str string) []Pair {
 			panic(fmt.Errorf("invalid range str %s", str))
 		}
 
-		start, err := strconv.ParseInt(parts[0], 10, 32)
+		start, err := strconv.Atoi(parts[0])
 		if err != nil {
 			panic(err)
 		}
 
-		end, err := strconv.ParseInt(parts[1], 10, 32)
+		end, err := strconv.Atoi(parts[1])
 		if err != nil {
 			panic(err)
 		}
 
-		return Range{start: int(start), end: int(end)}
+		return Range{start, end}
 	}
 
 	for _, line := range strings.Split(strings.TrimSpace(str), "\n") {

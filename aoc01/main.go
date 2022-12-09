@@ -27,12 +27,12 @@ func parse(str string) []Elf {
 			continue
 		}
 
-		num, err := strconv.ParseInt(line, 10, 32)
+		num, err := strconv.Atoi(line)
 		if err != nil {
 			panic(fmt.Errorf("invalid number %s", line))
 		}
 
-		current += int(num)
+		current += num
 	}
 
 	sort.Slice(result, func(i, j int) bool {
