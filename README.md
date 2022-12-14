@@ -1,6 +1,6 @@
 # Advent of Code 2022
 
-This is I am back to Go🚀
+This year I am back to Go🚀
 
 ```bash
 $ go version
