@@ -15,3 +15,7 @@ func ReadStdin() string {
 
 	return string(buf)
 }
+
+func Err(f string, args ...interface{}) {
+	panic(fmt.Errorf(f, args...))
+}
