@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
 func ReadStdin() string {
@@ -18,4 +19,24 @@ func ReadStdin() string {
 
 func Err(f string, args ...interface{}) {
 	panic(fmt.Errorf(f, args...))
+}
+
+func MustAtoi(f string) int {
+	num, err := strconv.Atoi(f)
+
+	if err != nil {
+		Err("invalid number string: %s", f)
+	}
+
+	return num
+}
+
+func MustAtoi64(f string) int64 {
+	num, err := strconv.ParseInt(f, 10, 64)
+
+	if err != nil {
+		Err("invalid number string: %s", f)
+	}
+
+	return num
 }
