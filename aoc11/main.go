@@ -16,6 +16,7 @@ func main() {
 	// 118674
 	// part1(monkeys)
 
+	// 32333418600
 	part2(monkeys)
 }
 
@@ -71,7 +72,9 @@ func (i *Item) update(m *Monkey) {
 			i.mods[k] = (v + m.opArg) % k
 		}
 	case Mul:
-		i.mods[m.test] = 0
+		for k, v := range i.mods {
+			i.mods[k] = (v * m.opArg) % k
+		}
 	case Square:
 		for k, v := range i.mods {
 			i.mods[k] = (v * v) % k
@@ -241,23 +244,15 @@ func part1(monkeys []*Monkey) {
 	// printMoneksy(monkeys)
 
 	for i := 0; i < 20; i++ {
-		round(monkeys, true)
+		for _, monkey := range monkeys {
+			turn(monkey, monkeys)
+		}
 
 		// fmt.Println("round", i+1)
 		// printMonkeyItems(monkeys)
 	}
 
 	fmt.Println(calcMonkeyBusiness(monkeys))
-}
-
-func round(monkeys []*Monkey, isPart1 bool) {
-	for _, monkey := range monkeys {
-		if isPart1 {
-			turn(monkey, monkeys)
-		} else {
-			turn2(monkey, monkeys)
-		}
-	}
 }
 
 func turn(monkey *Monkey, monkeys []*Monkey) {
@@ -291,7 +286,6 @@ func turn2(monkey *Monkey, monkeys []*Monkey) {
 
 		targetMonkey.newItems = append(targetMonkey.newItems, item)
 	}
-
 	monkey.newItems = monkey.newItems[:0]
 }
 
@@ -312,18 +306,20 @@ func calcMonkeyBusiness(monkeys []*Monkey) int {
 func part2(monkeys []*Monkey) {
 	// printMonkeys(monkeys)
 
-	for i := 1; i <= 1000; i++ {
-		round(monkeys, false)
-
-		if i == 1 || i == 20 || i == 1000 || i == 2000 {
-			fmt.Println("round", i)
-			for _, mon := range monkeys {
-				fmt.Print(mon.inspectedTimes)
-				fmt.Print(" ")
-				// fmt.Println(mon.items)
-			}
-			fmt.Println()
+	for i := 1; i <= 10_000; i++ {
+		for _, monkey := range monkeys {
+			turn2(monkey, monkeys)
 		}
+
+		// if i == 1 || i == 20 || i == 1000 || i == 2000 {
+		// 	fmt.Println("round", i)
+		// 	for _, mon := range monkeys {
+		// 		fmt.Print(mon.inspectedTimes)
+		// 		fmt.Print(" ")
+		// 		// fmt.Println(mon.items)
+		// 	}
+		// 	fmt.Println()
+		// }
 	}
 
 	fmt.Println(calcMonkeyBusiness(monkeys))
