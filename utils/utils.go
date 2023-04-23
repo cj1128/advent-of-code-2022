@@ -40,3 +40,48 @@ func MustAtoi64(f string) int64 {
 
 	return num
 }
+
+func FindCommonInString(strs []string) []rune {
+	if len(strs) == 0 {
+		return nil
+	}
+
+	ms := make([]map[rune]bool, len(strs))
+	for i := 0; i < len(strs); i++ {
+		ms[i] = make(map[rune]bool)
+	}
+
+	for idx, str := range strs {
+		for _, rune := range str {
+			ms[idx][rune] = true
+		}
+	}
+
+	var result []rune
+
+outer:
+	for k := range ms[0] {
+		for _, m := range ms[1:] {
+			if !m[k] {
+				continue outer
+			}
+		}
+
+		result = append(result, k)
+	}
+
+	return result
+}
+
+func Assert(expr bool) {
+	if !expr {
+		panic("assert error")
+	}
+}
+
+func Min(a, b int) int {
+	if a > b {
+		return b
+	}
+	return a
+}

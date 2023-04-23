@@ -31,35 +31,10 @@ func parse(str string) []Rucksack {
 }
 
 func part1(sacks []Rucksack) {
-
-	findCommon := func(str1, str2 string) []rune {
-		result := make(map[rune]bool)
-
-		m := make(map[rune]bool)
-
-		for _, r := range str1 {
-			m[r] = true
-		}
-
-		for _, r := range str2 {
-			if m[r] == true {
-				result[r] = true
-			}
-		}
-
-		var slice []rune
-
-		for k := range result {
-			slice = append(slice, k)
-		}
-
-		return slice
-	}
-
 	var commons [][]rune
 
 	for _, sack := range sacks {
-		common := findCommon(sack[0], sack[1])
+		common := utils.FindCommonInString([]string{sack[0], sack[1]})
 		commons = append(commons, common)
 	}
 
@@ -99,53 +74,12 @@ func parse2(str string) []Group {
 }
 
 func part2(groups []Group) {
-	findCommon := func(group Group) rune {
-		m := make(map[rune][]int)
-
-		appendIfNotExists := func(s []int, num int) []int {
-			found := false
-			result := s
-
-			for _, v := range s {
-				if v == num {
-					found = true
-				}
-			}
-
-			if !found {
-				result = append(result, num)
-			}
-
-			return result
-		}
-
-		for lineNo, line := range group {
-			for _, r := range line {
-				m[r] = appendIfNotExists(m[r], lineNo)
-			}
-		}
-
-		target := '-'
-
-		for k, v := range m {
-			if len(v) == 3 {
-				target = k
-			}
-		}
-		// fmt.Println(m)
-
-		if target == '-' {
-			panic(fmt.Errorf("could not find common in group"))
-		}
-
-		return target
-	}
-
 	result := 0
 	for _, g := range groups {
-		common := findCommon(g)
+		common := utils.FindCommonInString(g)
+		utils.Assert(len(common) == 1)
 		// fmt.Println(string(common))
-		result += calcScore([]rune{common})
+		result += calcScore(common)
 	}
 
 	fmt.Println(result)
