@@ -44,7 +44,7 @@ func part1(pairs []Pair) {
 	result := 0
 
 	for idx, pair := range pairs {
-		if cmp(pair[0], pair[1]) == 1 {
+		if cmp(pair[0], pair[1]) == Less {
 			// fmt.Println("right order", idx+1)
 			result += idx + 1
 		}
@@ -68,7 +68,7 @@ func part2(pairs []Pair) {
 	allPackets = append(allPackets, d2)
 
 	sort.Slice(allPackets, func(i, j int) bool {
-		return cmp(allPackets[i], allPackets[j]) == 1
+		return cmp(allPackets[i], allPackets[j]) == Less
 	})
 
 	idx1 := 0
@@ -86,10 +86,15 @@ func part2(pairs []Pair) {
 	fmt.Println(idx1 * idx2)
 }
 
-// 1: a < b
-// 0: a == b
-// -1: a > b
-func cmp(a []any, b []any) int {
+type Order string
+
+const (
+	Less    Order = "less"
+	Equal   Order = "equal"
+	Greater Order = "greater"
+)
+
+func cmp(a []any, b []any) Order {
 	minLen := utils.Min(len(a), len(b))
 
 	for i := 0; i < minLen; i++ {
@@ -101,11 +106,11 @@ func cmp(a []any, b []any) int {
 			f2 := item2.(float64)
 
 			if f1 < f2 {
-				return 1
+				return Less
 			}
 
 			if f1 > f2 {
-				return -1
+				return Greater
 			}
 
 			continue
@@ -120,7 +125,7 @@ func cmp(a []any, b []any) int {
 
 		r := cmp(item1.([]any), item2.([]any))
 
-		if r == 0 {
+		if r == Equal {
 			continue
 		}
 
@@ -128,14 +133,14 @@ func cmp(a []any, b []any) int {
 	}
 
 	if len(a) < len(b) {
-		return 1
+		return Less
 	}
 
 	if len(a) > len(b) {
-		return -1
+		return Greater
 	}
 
-	return 0
+	return Equal
 }
 
 func parsePacket(str string) Packet {
