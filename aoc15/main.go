@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	"cjting.me/aoc2022/utils"
@@ -173,22 +172,13 @@ func parse(str string) []Pair {
 			panic(fmt.Sprintf("invalid input: %s", line))
 		}
 
-		sx := mustParseInt(matched[1])
-		sy := mustParseInt(matched[2])
-		bx := mustParseInt(matched[3])
-		by := mustParseInt(matched[4])
+		sx := utils.MustAtoi(matched[1])
+		sy := utils.MustAtoi(matched[2])
+		bx := utils.MustAtoi(matched[3])
+		by := utils.MustAtoi(matched[4])
 
 		result = append(result, Pair{sx, sy, bx, by})
 	}
 
-	return result
-}
-
-func mustParseInt(str string) int {
-	result, err := strconv.Atoi(str)
-
-	if err != nil {
-		panic(fmt.Sprintf("invalid number string: %s", str))
-	}
 	return result
 }

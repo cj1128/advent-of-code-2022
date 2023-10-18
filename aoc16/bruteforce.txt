@@ -1,0 +1,150 @@
+package main
+
+import (
+	"fmt"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
+
+	"cjting.me/aoc2022/utils"
+)
+
+func main() {
+	info := parse(utils.ReadStdin())
+	// pp.Println(info)
+	part1(info)
+}
+
+func printInfo(info ValveInfo) {
+	for _, v := range info {
+		fmt.Print(v.label, ",", v.rate, ":")
+		for _, n := range v.neighbors {
+			fmt.Print(n.label, ", ")
+		}
+		fmt.Print(v.idx)
+		fmt.Println()
+	}
+
+}
+
+func part1(info ValveInfo) {
+	// always start with 'AA'
+
+	cur := info["AA"]
+	status := make([]int, len(info)/2)
+
+	result := recur(cur, info, status, 1, 30)
+	fmt.Println(result)
+}
+
+var cache = make(map[string]int)
+
+// return maximum value
+func recur(cur *Valve, info ValveInfo, status ValveStatus, minute, totalMinute int) int {
+	cacheKey := fmt.Sprintf("%s.%v.%d", cur.label, status, minute)
+	fmt.Println(cacheKey)
+
+	if cached, ok := cache[cacheKey]; ok {
+		return cached
+	}
+
+	if minute > totalMinute {
+		result := calc(info, status, totalMinute)
+		cache[cacheKey] = result
+		return result
+	}
+
+	var results []int
+
+	copied := make([]int, len(status))
+	copy(copied, status)
+
+	// open curent valve
+	if cur.rate > 0 && status[cur.idx] == 0 {
+		copied[cur.idx] = minute + 1
+		result := recur(cur, info, copied, minute+1, totalMinute)
+		results = append(results, result)
+	}
+
+	// move to neighbor
+	for _, n := range cur.neighbors {
+		copy(copied, status)
+		result := recur(n, info, copied, minute+1, totalMinute)
+		results = append(results, result)
+	}
+
+	sort.IntSlice(results).Sort()
+
+	result := results[len(results)-1]
+	cache[cacheKey] = result
+	return result
+}
+
+// calc total released pressure
+func calc(info ValveInfo, status ValveStatus, totalMinute int) int {
+	// pp.Println("calc", status)
+
+	result := 0
+
+	for idx, m := range status {
+		if m == 0 {
+			continue
+		}
+		rate := info[strconv.Itoa(idx)].rate
+		result += rate * (totalMinute - m + 1)
+	}
+
+	return result
+}
+
+// index is idx of valve
+// value is which minute this valve is opened, 0 means valve is not open
+type ValveStatus []int
+
+type Valve struct {
+	label     string
+	rate      int
+	idx       int
+	neighbors []*Valve
+}
+
+// label -> valve
+// idx -> valve
+type ValveInfo map[string]*Valve
+
+func parse(str string) ValveInfo {
+	result := make(map[string]*Valve)
+
+	regex := regexp.MustCompile(`Valve ([A-Z]{2}) has flow rate=(\d+); tunnels? leads? to valves? (.+)`)
+
+	for idx, line := range strings.Split(strings.TrimSpace(str), "\n") {
+		matched := regex.FindStringSubmatch(line)
+
+		if matched == nil {
+			panic(fmt.Sprintf("invalid input: %s", line))
+		}
+
+		label := matched[1]
+
+		if result[label] == nil {
+			result[label] = &Valve{label: label}
+		}
+
+		result[strconv.Itoa(idx)] = result[label]
+
+		valve := result[label]
+		valve.idx = idx
+		valve.rate = utils.MustAtoi(matched[2])
+
+		for _, label := range strings.Split(matched[3], ", ") {
+			if result[label] == nil {
+				result[label] = &Valve{label: label}
+			}
+
+			valve.neighbors = append(valve.neighbors, result[label])
+		}
+	}
+
+	return result
+}
