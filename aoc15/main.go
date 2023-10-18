@@ -35,6 +35,7 @@ func part1(pairs []Pair) {
 	result := 0
 
 	seen := make(map[string]bool)
+
 	for _, pair := range pairs {
 		bx := pair.bx
 		by := pair.by
@@ -48,12 +49,8 @@ func part1(pairs []Pair) {
 			continue
 		}
 
-		for _, r := range ranges {
-			if bx >= r.start && bx <= r.end {
-				seen[key] = true
-				result--
-			}
-		}
+		seen[key] = true
+		result--
 	}
 
 	for _, r := range ranges {
@@ -72,7 +69,7 @@ func getRanges(pairs []Pair, targetY int) []Range {
 		bx := pair.bx
 		by := pair.by
 
-		dis := abs(sx-bx) + abs(sy-by)
+		dis := manhattanDis(sx, sy, bx, by)
 
 		minY := sy - dis
 		maxY := sy + dis
@@ -114,6 +111,8 @@ func normalize(ranges []Range) []Range {
 			if interval.end > res[len(res)-1].end {
 				res[len(res)-1].end = interval.end
 			}
+		} else if interval.start == res[len(res)-1].end+1 {
+			res[len(res)-1].end = interval.end
 		} else {
 			// If the current interval starts after the last interval in the result ends,
 			// append the current interval to the result.
@@ -130,26 +129,35 @@ func part2(pairs []Pair) {
 	resultX := 0
 	resultY := 0
 
+outer:
 	for y := 0; y <= max; y++ {
 		ranges := getRanges(pairs, y)
 
 		if len(ranges) == 0 {
-			continue
+			panic("unreachable")
 		}
 
-		if ranges[0].start < 0 && ranges[0].end > max {
-			continue
+		for _, r := range ranges {
+			if r.start <= 0 && r.end >= max {
+				continue outer
+			}
 		}
 
 		// found!
+		// NOTE: 这里的计算不严谨，我们默认一定是两个 range 中间的夹缝
+		// 实际上不一定
 		resultX = ranges[1].start - 1
 		resultY = y
 
-		fmt.Println("found!", ranges)
+		fmt.Println("found!", y, ranges)
 		break
 	}
 
 	fmt.Println(resultX*max + resultY)
+}
+
+func manhattanDis(x1, y1, x2, y2 int) int {
+	return abs(x1-x2) + abs(y1-y2)
 }
 
 func abs(x int) int {
